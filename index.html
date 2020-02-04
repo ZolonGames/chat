@@ -5,17 +5,34 @@
         <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
     </head>
     <body>
-        <ul id="messages"></ul>
-        <form action="">
-            <label for="text">Name</label>
-            <input name="name" id="name" autocomplete="off" />
-            <label for="color">Color</label>
-            <input name="color" id="color" type="color" value="#000000">
-            <label for="text">Message</label>
-            <input name="text" id="text" autocomplete="off" />
-            <button>Send</button>
-        </form>
-
+        <div class="ui grid" style="padding: 1em">
+            <div class="eight wide column">
+                <div id="messages" class="ui list"></div>
+            </div>
+            <div class="eight wide column">
+                <form action="" class="ui form">
+                    <div class="two fields">
+                        <div class="field">
+                            <label for="text">Name</label>
+                            <input name="name" id="name" autocomplete="off" />
+                        </div>
+                        <div class="field">
+                            <label for="color">Color</label>
+                            <input name="color" id="color" type="color" value="#000000">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="text">Message</label>
+                        <input name="text" id="text" autocomplete="off" />
+                    </div>
+                    <div class="ui one column stackable center aligned page grid">
+                        <div class="column twelve wide">
+                            <button class="ui button center">Send</button>
+                        </div>
+                    </div>      
+                </form>
+            </div>
+        </div>
         <script src="/socket.io/socket.io.js"></script>
         <script
             src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -28,11 +45,12 @@
                 $('form').submit(function(e){
                     e.preventDefault();
                     socket.emit('chat message', {text: $('#text').val(), name: $('#name').val(), color: $('#color').val()});
-                    $('text').val('');
-                    return false
+                    $('#text').val('');
+                    return false;
                 });
-                socket.on('chat message', function(msg){
-                    $('#messages').append($('<li>').html("<span style='color: " + msg.color + "'><strong>" + msg.name + "</strong> says: " + msg.text + "</span>"));
+                socket.on('chat message', function(messages){
+                    $('#messages').html('');
+                    messages.map(msg => $('#messages').append($('<div>').html("<span style='color: " + msg.color + "'><strong>" + msg.name + "</strong> says: " + msg.text + "</span>").addClass("item")));
                 });
             });
         </script>
